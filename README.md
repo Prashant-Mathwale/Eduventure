@@ -75,22 +75,6 @@ npm start
 ```
 The application will spin up at [http://localhost:3000](http://localhost:3000).
 
----
-
-## 👩‍🏫 Demo Accounts
-
-You can test the system locally using these freshly generated profiles (if migrating mock data) or register new identities straight directly from the portal:
-
-**Teacher Account:**
-- **Username**: `mr.singh`
-- **Password**: `teacher123`
-
-**Student Account:**
-- **Username**: `arjun`
-- **Password**: `student123`
-
----
-
 <div align="center">
   <p>Built for the <strong>Smart India Hackathon (SIH)</strong></p>
 </div>
