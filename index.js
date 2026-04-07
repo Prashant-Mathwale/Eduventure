@@ -8,12 +8,20 @@ import bcrypt from 'bcrypt';
 import { fileURLToPath } from 'url';
 import OpenAI from "openai";
 import fs from 'fs';
+import mongoose from 'mongoose';
+import User from './models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
+
+// Initialize MongoDB
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/eduventure';
+mongoose.connect(MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // Initialize OpenAI
 const openai = new OpenAI({
@@ -31,30 +39,28 @@ app.use(session({ secret: 'sih-super-secret-key', resave: false, saveUninitializ
 app.use(passport.initialize());
 app.use(passport.session());
 
-// -------------------- Mock Users (With Badges) --------------------
-const users = [];
-const setupMockData = async () => {
-    // Passwords
-    const studentPass = await bcrypt.hash('student123', 10);
-    const teacherPass = await bcrypt.hash('teacher123', 10);
-
-    // Students
-    users.push({id: 1, username: 'arjun', password: studentPass, role: 'student', details: { name: "Arjun Mehta", grade: 10, adventurePoints: 980, badges: ['Quiz Master'] }});
-    users.push({id: 2, username: 'riya', password: studentPass, role: 'student', details: { name: "Riya Sharma", grade: 9, adventurePoints: 950, badges: [] }});
-    users.push({id: 3, username: 'karan', password: studentPass, role: 'student', details: { name: "Karan Patel", grade: 10, adventurePoints: 940, badges: [] }});
-    users.push({id: 4, username: 'simran', password: studentPass, role: 'student', details: { name: "Simran Kaur", grade: 8, adventurePoints: 910, badges: [] }});
-    users.push({id: 5, username: 'aman', password: studentPass, role: 'student', details: { name: "Aman Gupta", grade: 11, adventurePoints: 890, badges: ['Top Scorer'] }});
-    users.push({id: 6, username: 'neha', password: studentPass, role: 'student', details: { name: "Neha Verma", grade: 9, adventurePoints: 870, badges: [] }});
-    users.push({id: 7, username: 'sahil', password: studentPass, role: 'student', details: { name: "Sahil Khan", grade: 10, adventurePoints: 850, badges: [] }});
-    users.push({id: 8, username: 'ananya', password: studentPass, role: 'student', details: { name: "Ananya Joshi", grade: 8, adventurePoints: 820, badges: [] }});
-
-    // Teacher
-    users.push({
-        id: 9, username: 'mr.singh', password: teacherPass, role: 'teacher',
-        details: { name: "Mr. Singh", subject: "Science" }
-    });
-};
-setupMockData();
+// Migrating JSON to Mongo if needed (Disabled by default, call as needed for first run)
+// async function migrateData() {
+//     const users = loadUsers();
+//     for(let u of users) {
+//         const exists = await User.findOne({ username: u.username });
+//         if(!exists) {
+//             const newUser = new User({
+//                 username: u.username,
+//                 password: u.password,
+//                 role: u.role,
+//                 name: u.details.name,
+//                 grade: u.details.grade,
+//                 subject: u.details.subject,
+//                 adventurePoints: u.details.adventurePoints || 0,
+//                 badges: u.details.badges || [],
+//                 profilePic: u.details.profilePic || `https://placehold.co/128x128/818cf8/ffffff?text=${u.details.name.charAt(0)}`
+//             });
+//             await newUser.save();
+//         }
+//     }
+// }
+// migrateData();
 
 // -------------------- Data Loading Functions --------------------
 const loadQuizzes = () => JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'quizzes.json')));
@@ -62,13 +68,24 @@ const saveQuizzes = (data) => fs.writeFileSync(path.join(__dirname, 'data', 'qui
 
 // -------------------- Passport Auth --------------------
 passport.use(new LocalStrategy(async (username, password, done) => {
-    const user = users.find(u => u.username === username);
-    if (!user) return done(null, false);
-    if (await bcrypt.compare(password, user.password)) return done(null, user);
-    return done(null, false);
+    try {
+        const user = await User.findOne({ username });
+        if (!user) return done(null, false, { message: 'Incorrect username.' });
+        if (await bcrypt.compare(password, user.password)) return done(null, user);
+        return done(null, false, { message: 'Incorrect password.' });
+    } catch (err) {
+        return done(err);
+    }
 }));
 passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser((id, done) => done(null, users.find(u => u.id === id)));
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
+});
 
 function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) return next();
@@ -160,6 +177,42 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login' })
 });
 app.get('/logout', (req, res) => { req.logout(() => res.redirect('/login')); });
 
+// Registration Routes
+app.get('/register', (req, res) => res.render('register'));
+
+app.post('/register', async (req, res) => {
+    const { name, username, password, role, grade, subject } = req.body;
+    try {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.send('<script>alert("Username already exists"); window.location.href="/register";</script>');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            username,
+            password: hashedPassword,
+            role: role || 'student',
+            name,
+            profilePic: `https://placehold.co/128x128/818cf8/ffffff?text=${name.charAt(0)}`
+        });
+
+        if (newUser.role === 'student') {
+            newUser.grade = parseInt(grade) || 9;
+            newUser.adventurePoints = 0;
+            newUser.badges = [];
+        } else if (newUser.role === 'teacher') {
+            newUser.subject = subject || 'General';
+        }
+
+        await newUser.save();
+        res.redirect('/login');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/register');
+    }
+});
+
 // Student Routes
 app.get('/student', isAuthenticated, (req, res) => {
     const subjects = [
@@ -201,7 +254,7 @@ app.get('/quiz/:id', isAuthenticated, (req, res) => {
     res.render('quiz_detail', { quiz });
 });
 
-app.post('/quiz/:id/submit', isAuthenticated, (req, res) => {
+app.post('/quiz/:id/submit', isAuthenticated, async (req, res) => {
     const quizzes = loadQuizzes();
     const quiz = quizzes.find(q => q.id === parseInt(req.params.id));
     if (!quiz) return res.status(404).send("Quiz not found");
@@ -218,7 +271,26 @@ app.post('/quiz/:id/submit', isAuthenticated, (req, res) => {
             correct
         };
     });
-    res.render('quiz_result', { quiz, score, results });
+
+    // Update user history and points
+    try {
+        const user = await User.findById(req.user._id);
+        const pointsEarned = score * 10;
+        user.adventurePoints += pointsEarned;
+        
+        user.history.push({
+            activityType: 'quiz',
+            activityTitle: quiz.title,
+            score: score,
+            totalQuestions: quiz.questions.length
+        });
+
+        await user.save();
+    } catch (err) {
+        console.error("Error saving quiz result:", err);
+    }
+
+    res.render('quiz_result', { quiz, score, results, total: quiz.questions.length, quizId: quiz.id });
 });
 
 app.get('/games', isAuthenticated, (req, res) => res.render('games_hub'));
@@ -226,41 +298,58 @@ app.get('/games/memory', isAuthenticated, (req, res) => res.render('memory_game'
 app.get('/games/math-sprint', isAuthenticated, (req, res) => res.render('math_sprint_game'));
 app.get('/games/typing-speed', isAuthenticated, (req, res) => res.render('typing_speed_game'));
 
-app.get('/leaderboard', isAuthenticated, (req, res) => {
-    const students = users.filter(u => u.role === 'student').sort((a, b) => b.details.adventurePoints - a.details.adventurePoints);
-    res.render('leaderboard', { students });
+app.get('/leaderboard', isAuthenticated, async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' }).sort({ adventurePoints: -1 }).limit(10);
+        res.render('leaderboard', { students });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/student');
+    }
 });
 
 // Teacher Routes
-app.get('/teacher', isAuthenticated, (req, res) => {
-    const students = users.filter(u => u.role === 'student');
-    const quizzes = loadQuizzes();
-    res.render('teacher_dashboard', { students, quizzes, greeting: getGreeting(res.locals.t) });
+app.get('/teacher', isAuthenticated, async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' });
+        const quizzes = loadQuizzes();
+        res.render('teacher_dashboard', { students, quizzes, greeting: getGreeting(res.locals.t) });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/login');
+    }
 });
 
-app.get('/teacher/students', isAuthenticated, (req, res) => {
-    const students = users.filter(u => u.role === 'student');
-    res.render('teacher_manage_students', { students });
+app.get('/teacher/students', isAuthenticated, async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' });
+        res.render('teacher_manage_students', { students });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/teacher');
+    }
 });
 
 app.post('/teacher/students/add', isAuthenticated, async (req, res) => {
     const { name, grade, username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newStudent = {
-        id: users.length + 1,
-        username,
-        password: hashedPassword,
-        role: 'student',
-        details: {
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newStudent = new User({
+            username,
+            password: hashedPassword,
+            role: 'student',
             name,
             grade: parseInt(grade),
             adventurePoints: 0,
             badges: [],
             profilePic: `https://placehold.co/128x128/818cf8/ffffff?text=${name.charAt(0)}`
-        }
-    };
-    users.push(newStudent);
-    res.redirect('/teacher/students');
+        });
+        await newStudent.save();
+        res.redirect('/teacher/students');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/teacher/students');
+    }
 });
 
 app.get('/teacher/quizzes', isAuthenticated, (req, res) => {

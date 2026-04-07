@@ -13,7 +13,7 @@
         <%- include('partials/sidebar') %>
         <main class="main-content flex flex-col">
             <header class="mb-8">
-                <h1 class="text-3xl font-bold"><%= greeting %>, <%= user.details.name.split(' ')[0] %>!</h1>
+                <h1 class="text-3xl font-bold"><%= greeting %>, <%= user.name.split(' ')[0] %>!</h1>
                 <p class="text-gray-400"><%= t.welcomeMessage %></p>
             </header>
 
@@ -35,7 +35,7 @@
                 <!-- Adventure Points Section -->
                 <div class="card p-6">
                     <h2 class="text-2xl font-semibold mb-4"><%= t.adventurePoints %></h2>
-                    <p class="text-3xl font-bold text-blue-400"><%= user.details.adventurePoints %></p>
+                    <p class="text-3xl font-bold text-blue-400"><%= user.adventurePoints %></p>
                     <p class="text-gray-400"><%= t.totalPoints %></p>
                 </div>
 

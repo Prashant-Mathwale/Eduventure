@@ -53,9 +53,9 @@
                     <tbody>
                         <% students.forEach(student => { %>
                             <tr class="border-b border-gray-800 hover:bg-gray-800/50">
-                                <td class="p-3"><%= student.details.name %></td>
-                                <td class="p-3"><%= student.details.grade %></td>
-                                <td class="p-3"><%= student.details.adventurePoints %></td>
+                                <td class="p-3"><%= student.name %></td>
+                                <td class="p-3"><%= student.grade %></td>
+                                <td class="p-3"><%= student.adventurePoints %></td>
                             </tr>
                         <% }) %>
                     </tbody>

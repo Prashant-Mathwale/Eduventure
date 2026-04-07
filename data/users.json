@@ -1,0 +1,149 @@
+[
+  {
+    "id": 1,
+    "username": "arjun",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Arjun Mehta",
+      "grade": 10,
+      "adventurePoints": 980,
+      "badges": [
+        "Quiz Master"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "username": "riya",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Riya Sharma",
+      "grade": 9,
+      "adventurePoints": 950,
+      "badges": []
+    }
+  },
+  {
+    "id": 3,
+    "username": "karan",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Karan Patel",
+      "grade": 10,
+      "adventurePoints": 940,
+      "badges": []
+    }
+  },
+  {
+    "id": 4,
+    "username": "simran",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Simran Kaur",
+      "grade": 8,
+      "adventurePoints": 910,
+      "badges": []
+    }
+  },
+  {
+    "id": 5,
+    "username": "aman",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Aman Gupta",
+      "grade": 11,
+      "adventurePoints": 890,
+      "badges": [
+        "Top Scorer"
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "username": "neha",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Neha Verma",
+      "grade": 9,
+      "adventurePoints": 870,
+      "badges": []
+    }
+  },
+  {
+    "id": 7,
+    "username": "sahil",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Sahil Khan",
+      "grade": 10,
+      "adventurePoints": 850,
+      "badges": []
+    }
+  },
+  {
+    "id": 8,
+    "username": "ananya",
+    "password": "$2b$10$SpJDYgBzi0hVE4zRA06JOO4pT.xpYeUnRFu8Zf74SH6FWqd3OI/kO",
+    "role": "student",
+    "details": {
+      "name": "Ananya Joshi",
+      "grade": 8,
+      "adventurePoints": 820,
+      "badges": []
+    }
+  },
+  {
+    "id": 9,
+    "username": "mr.singh",
+    "password": "$2b$10$O.8Q2T.94KuMhHSFptqJreMn3HnlZ9D5QVXkCbO53u.Q.pZbJPz5S",
+    "role": "teacher",
+    "details": {
+      "name": "Mr. Singh",
+      "subject": "Science"
+    }
+  },
+  {
+    "id": 10,
+    "username": "teststudent",
+    "password": "$2b$10$WX5cyJW8reluQK1Hp2Aq5ejAtIUp1LDgW64X0qPeGlzI31IPRQnmm",
+    "role": "student",
+    "details": {
+      "name": "Test Student",
+      "profilePic": "https://placehold.co/128x128/818cf8/ffffff?text=T",
+      "grade": 10,
+      "adventurePoints": 0,
+      "badges": []
+    }
+  },
+  {
+    "id": 11,
+    "username": "prashant",
+    "password": "$2b$10$6IZXhWm9QcXAQxRh/f8Hp.lb.y7Q1P0ghwkuc2PvOuZqB1u2EaxWC",
+    "role": "student",
+    "details": {
+      "name": "Prashant Mathwale ",
+      "profilePic": "https://placehold.co/128x128/818cf8/ffffff?text=P",
+      "grade": 9,
+      "adventurePoints": 0,
+      "badges": []
+    }
+  },
+  {
+    "id": 12,
+    "username": "soham",
+    "password": "$2b$10$cEwzQGICaJoAECCD3oj5dO6exOVtRAEXZcrSFlXb7TlS9QHSOwaBm",
+    "role": "teacher",
+    "details": {
+      "name": "Soham",
+      "profilePic": "https://placehold.co/128x128/818cf8/ffffff?text=S",
+      "subject": "Math"
+    }
+  }
+]

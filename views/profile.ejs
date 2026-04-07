@@ -12,19 +12,56 @@
         <%- include('partials/sidebar') %>
         <main class="main-content">
             <h1 class="text-3xl font-bold mb-6 text-blue-400"><%= t.myProfile %></h1>
-            <div class="card p-6 space-y-3 text-lg">
-                <p><strong><%= t.name %>:</strong> <%= user.details.name %></p>
-                <p><strong><%= t.grade %>:</strong> <%= user.details.grade %></p>
-                <p><strong><%= t.adventurePoints %>:</strong> <%= user.details.adventurePoints %></p>
-                
-                <p><strong><%= t.badges %>:</strong>
-                    <% if (user.details.badges && user.details.badges.length > 0) { %>
-                        <%= user.details.badges.join(', ') %>
-                    <% } else { %>
-                        <span class="text-gray-500"><%= t.noBadges %></span>
-                    <% } %>
-                </p>
+            <div class="card p-6 space-y-4">
+                <div class="flex items-center space-x-4 mb-4">
+                    <img src="<%= user.profilePic || 'https://placehold.co/128x128/818cf8/ffffff?text=' + user.name.charAt(0) %>" class="w-20 h-20 rounded-full border-2 border-blue-500">
+                    <div>
+                        <h2 class="text-2xl font-bold"><%= user.name %></h2>
+                        <p class="text-gray-400 capitalize"><%= user.role %></p>
+                    </div>
+                </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
+                    <p><strong><%= t.username %>:</strong> <%= user.username %></p>
+                    <% if(user.role === 'student') { %>
+                        <p><strong><%= t.grade %>:</strong> <%= user.grade %></p>
+                        <p><strong><%= t.adventurePoints %>:</strong> <span class="text-blue-400 font-bold"><%= user.adventurePoints %></span></p>
+                    <% } else { %>
+                        <p><strong><%= t.subject %>:</strong> <%= user.subject %></p>
+                    <% } %>
+                    <p><strong><%= t.badges %>:</strong>
+                        <% if (user.badges && user.badges.length > 0) { %>
+                            <span class="text-yellow-400"><%= user.badges.join(', ') %></span>
+                        <% } else { %>
+                            <span class="text-gray-500"><%= t.noBadges %></span>
+                        <% } %>
+                    </p>
+                </div>
+
+                <!-- History Section -->
+                <div class="mt-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-blue-300">Activity History</h3>
+                    <div class="space-y-3">
+                        <% if (user.history && user.history.length > 0) { %>
+                            <% user.history.slice().reverse().forEach(item => { %>
+                                <div class="bg-gray-800/50 p-4 rounded-lg flex justify-between items-center border-l-4 border-blue-500">
+                                    <div>
+                                        <p class="font-bold text-white"><%= item.activityTitle %></p>
+                                        <p class="text-sm text-gray-400 capitalize"><%= item.activityType %> • <%= new Date(item.timestamp).toLocaleDateString() %></p>
+                                    </div>
+                                    <% if (item.score !== undefined) { %>
+                                        <div class="text-right">
+                                            <p class="text-xl font-bold text-green-400"><%= item.score %>/<%= item.totalQuestions %></p>
+                                            <p class="text-xs text-gray-500">Score</p>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="text-gray-500 italic">No activity recorded yet. Start learning!</p>
+                        <% } %>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

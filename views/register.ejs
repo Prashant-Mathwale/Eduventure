@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Eduventure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <script>
+        function toggleFields() {
+            const role = document.querySelector('input[name="role"]:checked').value;
+            if (role === 'student') {
+                document.getElementById('student-fields').classList.remove('hidden');
+                document.getElementById('teacher-fields').classList.add('hidden');
+            } else {
+                document.getElementById('student-fields').classList.add('hidden');
+                document.getElementById('teacher-fields').classList.remove('hidden');
+            }
+        }
+    </script>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+  <div class="card w-full max-w-md p-8">
+    <h1 class="text-3xl font-bold mb-8 text-center text-green-400">Create Account</h1>
+    <form action="/register" method="POST" class="space-y-4">
+      
+      <!-- Full Name -->
+      <div>
+        <input type="text" name="name" placeholder="Full Name" required 
+               class="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <!-- Username -->
+      <div>
+        <input type="text" name="username" placeholder="Choose Username" required 
+               class="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <!-- Password -->
+      <div>
+        <input type="password" name="password" placeholder="Create Password" required 
+               class="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <!-- Role Selection -->
+      <div class="flex justify-center space-x-6 text-white text-lg">
+          <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="radio" name="role" value="student" checked onchange="toggleFields()" class="form-radio text-green-500">
+              <span>Student</span>
+          </label>
+          <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="radio" name="role" value="teacher" onchange="toggleFields()" class="form-radio text-green-500">
+              <span>Teacher</span>
+          </label>
+      </div>
+
+      <!-- Student Fields -->
+      <div id="student-fields">
+        <input type="number" name="grade" placeholder="Class/Grade (e.g., 9)" min="1" max="12"
+               class="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <!-- Teacher Fields -->
+      <div id="teacher-fields" class="hidden">
+        <input type="text" name="subject" placeholder="Subject Specialization (e.g., Math)"
+               class="w-full p-3 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <button type="submit" class="w-full btn-primary py-3 text-lg font-bold bg-green-600 hover:bg-green-700 border-none">Register</button>
+    </form>
+
+    <div class="mt-6 text-center">
+        <p class="text-gray-400">Already have an account? <a href="/login" class="text-green-400 hover:underline">Login here</a></p>
+    </div>
+  </div>
+</body>
+</html>
